@@ -33,7 +33,9 @@ void setup() {
   Serial.begin(115200);
   analogReadResolution(12);
   
-  analogWriteFrequency(pwmFrequency);
+  analogWriteFrequency(acidPumpPin,pwmFrequency);
+  analogWriteFrequency(alkaliPumpPin,pwmFrequency);
+  
   
   // Set pins as outputs
   pinMode(acidPumpPin, OUTPUT);
