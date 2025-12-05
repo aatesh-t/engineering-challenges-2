@@ -13,13 +13,13 @@ const float Kd = 0.0;
 
 const float phDeadband = 0.1;
 const float integralMax = 500.0;
-const float outputMax = 5000.0;
-const float outputMin = 100.0;
-const int minDutyCycle = 150;
+const float outputMax = 10000.0;
+const float outputMin = 1000.0;
+const int minDutyCycle = 220;
 const int maxDutyCycle = 255;
 
 const unsigned long measureInterval = 2000;
-const unsigned long pumpCooldown = 1000;
+const unsigned long pumpCooldown = 1500;
 
 float integral = 0.0;
 float previousError = 0.0;
@@ -33,7 +33,8 @@ void setup() {
   Serial.begin(115200);
   analogReadResolution(12);
   
-  analogWriteFrequency(pwmFrequency);
+  analogWriteFrequency(acidPumpPin, pwmFrequency);
+  analogWriteFrequency(alkaliPumpPin, pwmFrequency);
   
   // Set pins as outputs
   pinMode(acidPumpPin, OUTPUT);
@@ -45,7 +46,7 @@ void setup() {
   Serial.println(Kp);
   Serial.print(", Ki:");
   Serial.println(Ki);
-  Serial.print(", Kd");
+  Serial.print(", Kd:");
   Serial.println(Kd);
   Serial.print("Deadband: +-");
   Serial.println(phDeadband, 2);
@@ -85,15 +86,15 @@ float calculatePh(float V) {
 }
 
 // Start function
-void startPump(int pin, int maxDuty = 255, int step = 5, int delayMs = 50) {
-  for (int duty = 0; duty <= maxDuty; duty += step) {
+void startPump(int pin, int maxDuty = 255, int step = 10, int delayMs = 20) {
+  for (int duty = minDutyCycle; duty <= maxDuty; duty += step) {
     analogWrite(pin, duty);
     delay(delayMs);
   }
 }
 
 // Stop function
-void stopPump(int pin, int currentDuty, int step = 5, int delayMs = 50) {
+void stopPump(int pin, int currentDuty, int step = 10, int delayMs = 20) {
   for (int duty = currentDuty; duty >= 0; duty -= step) {
     analogWrite(pin, duty);
     delay(delayMs);
